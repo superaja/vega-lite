@@ -1,112 +1,84 @@
 import {SCALE_CHANNELS} from '../../channel';
-import {ScaleType} from '../../scale';
+import {isScaleChannel} from '../../channel';
+import {FieldDef} from '../../fielddef';
+import {scaleCompatible, ScaleType} from '../../scale';
+import {hasContinuousDomain} from '../../scale';
+import {QUANTITATIVE, TEMPORAL} from '../../type';
 import {contains, Dict, differ, differArray, duplicate, extend, hash, keys, stringValue} from '../../util';
 import {VgFilterTransform, VgTransform} from '../../vega.schema';
+import {Model, ModelWithField} from '../model';
 import {UnitModel} from './../unit';
 import {DataFlowNode} from './dataflow';
-import {isScaleChannel} from '../../channel'
-import {hasContinuousDomain} from '../../scale';
-import {QUANTITATIVE, TEMPORAL} from '../../type';;
-import {FieldDef} from '../../fielddef';
-import {Model, ModelWithField} from '../model';
 
 export class FilterInvalidNode extends DataFlowNode {
-  private _filter_null: Dict<FieldDef<String>>;
-  private _filter_non_pos: Dict<FieldDef<String>>;
+  private filterInvalid: Dict<ScaleType>;
+  private fieldDefs: Dict<FieldDef<string>>;
 
   public clone() {
-    return new FilterInvalidNode(extend({}, this._filter_null), extend({}, this._filter_non_pos));
+    return new FilterInvalidNode(extend({}, this.filterInvalid), extend({}, this.fieldDefs));
   }
 
-  constructor(filter_null: Dict<FieldDef<String>>, filter_nonpos: Dict<FieldDef<String>>) {
-    super();
+  constructor(filter: Dict<ScaleType>, fieldDefs: Dict<FieldDef<string>>) {
+   super();
 
-   this._filter_non_pos = filter_nonpos;
-   this._filter_null = filter_null;
+   this.filterInvalid = filter;
+   this.fieldDefs = fieldDefs;
   }
 
-  public static make(model: Model) {
+  public static make(model: ModelWithField) {
 
-    // create the filter of all the non positive fields
-      const filter_nonpos = SCALE_CHANNELS.reduce(function(nonPositiveComponent, channel) {
+    const fieldDefs = {};
 
-        if (model instanceof UnitModel) {
-            const scale = model.getScaleComponent(channel);
-            if (!scale || !model.field(channel)) {
-              // don't set anything
-              return nonPositiveComponent;
-            }
+    const filter = model.reduceFieldDef((aggregator: Dict<ScaleType>, fieldDef, channel) => {
+      const scaleComponent = isScaleChannel(channel) && model.getScaleComponent(channel);
+      if (scaleComponent) {
+        const scaleType = scaleComponent.get('type');
 
-            if (scale.get('type') === ScaleType.LOG) {
-              nonPositiveComponent[model.field(channel)] = model.fieldDef(channel);
-            }
-            return nonPositiveComponent;
+        // only automatically filter null for continuous domain since discrete domain scales can handle invalid values.
+        if (hasContinuousDomain(scaleType)) {
+          aggregator[fieldDef.field] = scaleType;
+          fieldDefs[fieldDef.field] = fieldDef;
+        } else if (scaleComponent.get('type') === ScaleType.LOG) {
+          aggregator[fieldDef.field] = scaleType;
+          fieldDefs[fieldDef.field] = fieldDef;
         }
-        return nonPositiveComponent;
-      }, {} as Dict<FieldDef<String>>);
+      }
+      return aggregator;
+    }, {} as Dict<ScaleType>);
 
-    // create the filter of all the fields that cannot have null
-    let filter_nulls = {};
-    if (model instanceof ModelWithField) {
-      filter_nulls = model.reduceFieldDef((aggregator: Dict<FieldDef<string>>, fieldDef, channel) => {
-          if (model.config.invalidValues === 'filter' && !fieldDef.aggregate && fieldDef.field) {
-            // Vega's aggregate operator already handle invalid values, so we only have to consider non-aggregate field here.
-
-            const scaleComponent = isScaleChannel(channel) && model.getScaleComponent(channel);
-            if (scaleComponent) {
-              const scaleType = scaleComponent.get('type');
-
-              // only automatically filter null for continuous domain since discrete domain scales can handle invalid values.
-              if (hasContinuousDomain(scaleType)) {
-                aggregator[fieldDef.field] = fieldDef;
-              }
-            }
-          }
-
-          return aggregator;
-      }, {} as Dict<FieldDef<string>>);
-    }
-
-
-    if (!keys(filter_nulls).length && !keys(filter_nonpos).length) {
+    if (!keys(filter).length) {
       return null;
     }
 
-    return new FilterInvalidNode(filter_nulls, filter_nonpos);
+    return new FilterInvalidNode(filter, fieldDefs);
   }
 
   get filter() {
-    return {};
+    return this.filterInvalid;
   }
 
   // create the VgTransforms for each of the filtered fields
   public assemble(): VgTransform[] {
-    let filter_nonpos = keys(this._filter_null).filter((field) => {
-      // Only filter fields (keys) with value = true
-      return this._filter_null[field] !== null;
-    }).map(function(field) {
-      return {
-        type: 'filter',
-        expr: 'datum["' + field + '"] > 0'
-      } as VgFilterTransform;
-    });
-    let filter_null = keys(this._filter_null).reduce((_filters, field) => {
-      const fieldDef = this._filter_null[field];
-      if (fieldDef !== null) {
-        _filters.push(`datum[${stringValue(fieldDef.field)}] !== null`);
+
+     return keys(this.filter).reduce((vegaFilters, field) => {
+      const fieldDef = this.fieldDefs[field];
+      const scaleType = this.filter[field];
+      if (scaleType === ScaleType.LOG) {
+        vegaFilters.push({
+          type: 'filter',
+          expr: 'datum["' + field + '"] > 0'
+        } as VgFilterTransform
+        );
+      } else if (fieldDef !== null) {
+        vegaFilters.push(`datum[${stringValue(field)}] !== null`);
         if (contains([QUANTITATIVE, TEMPORAL], fieldDef.type)) {
           // TODO(https://github.com/vega/vega-lite/issues/1436):
           // We can be even smarter and add NaN filter for N,O that are numbers
           // based on the `parse` property once we have it.
-          _filters.push(`!isNaN(datum[${stringValue(fieldDef.field)}])`);
+          vegaFilters.push(`!isNaN(datum[${stringValue(field)}])`);
         }
       }
-      return _filters;
+      return vegaFilters;
     }, []);
-
-    // combine the two arrays and return the filtered result
-    let res = filter_nonpos;
-    res.concat(filter_null);
-    return res;
   }
 }
