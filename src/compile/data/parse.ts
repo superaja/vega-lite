@@ -8,6 +8,7 @@ import {AggregateNode} from './aggregate';
 import {BinNode} from './bin';
 import {DataFlowNode, OutputNode} from './dataflow';
 import {FacetNode} from './facet';
+import {FilterInvalidNode} from './FilterInvalid';
 import {ParseNode} from './formatparse';
 import {DataComponent} from './index';
 import {NonPositiveFilterNode} from './nonpositivefilter';
@@ -17,7 +18,6 @@ import {SourceNode} from './source';
 import {StackNode} from './stack';
 import {TimeUnitNode} from './timeunit';
 import {parseTransformArray} from './transforms';
-import {FilterInvalidNode} from './FilterInvalid';
 
 
 function parseRoot(model: Model, sources: Dict<SourceNode>): DataFlowNode {
@@ -102,6 +102,14 @@ export function parseData(model: Model): DataComponent {
 
   // the current head of the tree that we are appending to
   let head = root;
+
+  if (model instanceof ModelWithField) {
+    const filterInvalid = FilterInvalidNode.make(model);
+    if (filterInvalid) {
+      filterInvalid.parent = head;
+      head = filterInvalid;
+    }
+  }
 
   // HACK: This is equivalent for merging bin extent for union scale.
   // FIXME(https://github.com/vega/vega-lite/issues/2270): Correctly merge extent / bin node for shared bin scale
@@ -189,12 +197,6 @@ export function parseData(model: Model): DataComponent {
     outputNodes[facetName] = facetRoot;
     facetRoot.parent = head;
     head = facetRoot;
-  }
-
-  const filterInvalid = FilterInvalidNode.make(model);
-  if (filterInvalid) {
-    filterInvalid.parent = head;
-    head = filterInvalid;
   }
 
   // add the format parse from this model so that children don't parse the same field again

@@ -7,6 +7,7 @@ import {QUANTITATIVE, TEMPORAL} from '../../type';
 import {contains, Dict, differ, differArray, duplicate, extend, hash, keys, stringValue} from '../../util';
 import {VgFilterTransform, VgTransform} from '../../vega.schema';
 import {Model, ModelWithField} from '../model';
+import {scaleType} from '../scale/type';
 import {UnitModel} from './../unit';
 import {DataFlowNode} from './dataflow';
 
@@ -32,14 +33,16 @@ export class FilterInvalidNode extends DataFlowNode {
     const filter = model.reduceFieldDef((aggregator: Dict<ScaleType>, fieldDef, channel) => {
       const scaleComponent = isScaleChannel(channel) && model.getScaleComponent(channel);
       if (scaleComponent) {
-        const scaleType = scaleComponent.get('type');
+        const scaleCompType = scaleComponent.get('type');
 
         // only automatically filter null for continuous domain since discrete domain scales can handle invalid values.
-        if (hasContinuousDomain(scaleType)) {
-          aggregator[fieldDef.field] = scaleType;
+        if (hasContinuousDomain(scaleCompType)) {
+          aggregator[fieldDef.field] = scaleCompType;
           fieldDefs[fieldDef.field] = fieldDef;
-        } else if (scaleComponent.get('type') === ScaleType.LOG) {
-          aggregator[fieldDef.field] = scaleType;
+        }
+
+        if (scaleCompType === ScaleType.LOG || scaleCompType === ScaleType.SQRT) {
+          aggregator[fieldDef.field] = scaleCompType;
           fieldDefs[fieldDef.field] = fieldDef;
         }
       }
@@ -50,7 +53,7 @@ export class FilterInvalidNode extends DataFlowNode {
       return null;
     }
 
-    return new FilterInvalidNode(filter, fieldDefs);
+  return new FilterInvalidNode(filter, fieldDefs);
   }
 
   get filter() {
@@ -62,22 +65,28 @@ export class FilterInvalidNode extends DataFlowNode {
 
      return keys(this.filter).reduce((vegaFilters, field) => {
       const fieldDef = this.fieldDefs[field];
-      const scaleType = this.filter[field];
-      if (scaleType === ScaleType.LOG) {
-        vegaFilters.push({
-          type: 'filter',
-          expr: 'datum["' + field + '"] > 0'
-        } as VgFilterTransform
-        );
-      } else if (fieldDef !== null) {
-        vegaFilters.push(`datum[${stringValue(field)}] !== null`);
+      const scaleCompType = this.filter[field];
+      const filters = [];
+
+      if (fieldDef !== null) {
+        filters.push(`datum[${stringValue(field)}] !== null`);
         if (contains([QUANTITATIVE, TEMPORAL], fieldDef.type)) {
           // TODO(https://github.com/vega/vega-lite/issues/1436):
           // We can be even smarter and add NaN filter for N,O that are numbers
           // based on the `parse` property once we have it.
-          vegaFilters.push(`!isNaN(datum[${stringValue(field)}])`);
+          filters.push(`!isNaN(datum[${stringValue(field)}])`);
         }
       }
+
+      if (scaleCompType === ScaleType.LOG || scaleCompType === ScaleType.SQRT) {
+        filters.push('datum["' + field + '"] > 0');
+      }
+
+      vegaFilters.push(filters.length > 0 ?
+      {
+        type: 'filter',
+        expr: filters.join(' && ')
+      } : null);
       return vegaFilters;
     }, []);
   }

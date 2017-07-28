@@ -6,6 +6,7 @@ import {AggregateNode} from './aggregate';
 import {BinNode} from './bin';
 import {DataFlowNode, OutputNode} from './dataflow';
 import {FacetNode} from './facet';
+import {FilterInvalidNode} from './FilterInvalid';
 import {ParseNode} from './formatparse';
 import {NonPositiveFilterNode} from './nonpositivefilter';
 import {NullFilterNode} from './nullfilter';
@@ -42,48 +43,6 @@ function removeUnnecessaryNodes(node: DataFlowNode) {
   node.children.forEach(removeUnnecessaryNodes);
 }
 
-/**
- * Move nuill filtered nodes to the end
- */
-function moveNullFilteredToEnd(node: DataFlowNode) {
-  if (node.numChildren() == 0) {
-    return;
-  }
-
-  if (node instanceof NullFilterNode) {
-    if (node.numChildren() == 1) {
-        let child = node.children[0];
-        child.swapWithParent();
-        moveNullFilteredToEnd(node)
-    } else {
-
-      // move the null filter node down forks
-      // copy the current node, delete it and move the copy
-      // to the start of every fork
-
-      let prev = node.parent;
-
-      for (let i = 0; i < node.numChildren(); i++) {
-        let copy = node.clone();
-        let child = node.children[i];
-
-        for (let j = 0; j < copy.numChildren(); i++) {
-          copy.children[i].remove();
-        }
-
-        child.parent = copy;
-        copy.parent = prev;
-      }
-
-      node.remove();
-
-      prev.children.forEach(moveNullFilteredToEnd);
-    }
-  } else {
-    // recursively check children
-    node.children.forEach(moveNullFilteredToEnd)
-  }
-}
 
 /**
  * Clones the subtree and ignores output nodes except for the leafs, which are renamed.
@@ -250,7 +209,8 @@ function makeWalkTree(data: VgData[]) {
     if (node instanceof NonPositiveFilterNode ||
       node instanceof BinNode ||
       node instanceof TimeUnitNode ||
-      node instanceof StackNode) {
+      node instanceof StackNode ||
+      node instanceof FilterInvalidNode) {
       dataSource.transform = dataSource.transform.concat(node.assemble());
       }
 
