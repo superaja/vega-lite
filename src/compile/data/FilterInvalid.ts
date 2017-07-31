@@ -1,13 +1,11 @@
 import {SCALE_CHANNELS} from '../../channel';
 import {isScaleChannel} from '../../channel';
 import {FieldDef} from '../../fielddef';
-import {scaleCompatible, ScaleType} from '../../scale';
-import {hasContinuousDomain} from '../../scale';
+import {scaleCompatible, ScaleType, hasContinuousDomain} from '../../scale';
 import {QUANTITATIVE, TEMPORAL} from '../../type';
 import {contains, Dict, differ, differArray, duplicate, extend, hash, keys, stringValue} from '../../util';
 import {VgFilterTransform, VgTransform} from '../../vega.schema';
 import {Model, ModelWithField} from '../model';
-import {scaleType} from '../scale/type';
 import {UnitModel} from './../unit';
 import {DataFlowNode} from './dataflow';
 
@@ -33,16 +31,11 @@ export class FilterInvalidNode extends DataFlowNode {
     const filter = model.reduceFieldDef((aggregator: Dict<ScaleType>, fieldDef, channel) => {
       const scaleComponent = isScaleChannel(channel) && model.getScaleComponent(channel);
       if (scaleComponent) {
-        const scaleCompType = scaleComponent.get('type');
+        const scaleType = scaleComponent.get('type');
 
         // only automatically filter null for continuous domain since discrete domain scales can handle invalid values.
         if (hasContinuousDomain(scaleCompType)) {
-          aggregator[fieldDef.field] = scaleCompType;
-          fieldDefs[fieldDef.field] = fieldDef;
-        }
-
-        if (scaleCompType === ScaleType.LOG || scaleCompType === ScaleType.SQRT) {
-          aggregator[fieldDef.field] = scaleCompType;
+          aggregator[fieldDef.field] = scaleType;
           fieldDefs[fieldDef.field] = fieldDef;
         }
       }
@@ -68,22 +61,14 @@ export class FilterInvalidNode extends DataFlowNode {
       const scaleCompType = this.filter[field];
       const filters = [];
 
-      if (fieldDef !== null) {
-        filters.push(`datum[${stringValue(field)}] !== null`);
-        if (contains([QUANTITATIVE, TEMPORAL], fieldDef.type)) {
-          // TODO(https://github.com/vega/vega-lite/issues/1436):
-          // We can be even smarter and add NaN filter for N,O that are numbers
-          // based on the `parse` property once we have it.
-          filters.push(`!isNaN(datum[${stringValue(field)}])`);
-        }
-      }
-
       if (scaleCompType === ScaleType.LOG || scaleCompType === ScaleType.SQRT) {
-        filters.push('datum["' + field + '"] > 0');
+        filters.push(`datum[${stringValue(field)}] > 0`);
+      } else if (fieldDef !== null) {
+        filters.push(`datum[${stringValue(field)}] !== null`);
+        filters.push(`!isNaN(datum[${stringValue(field)}])`);
       }
 
-      vegaFilters.push(filters.length > 0 ?
-      {
+      vegaFilters.push(filters.length > 0 ? {
         type: 'filter',
         expr: filters.join(' && ')
       } : null);
