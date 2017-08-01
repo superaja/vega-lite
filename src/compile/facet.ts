@@ -38,7 +38,7 @@ import {RepeaterValue, replaceRepeaterInFacet} from './repeater';
 import {parseGuideResolve} from './resolve';
 import {assembleScalesForModel} from './scale/assemble';
 import {ScaleComponent, ScaleComponentIndex} from './scale/component';
-import {getFieldFromDomains} from './scale/domain';
+import {assembleDomain, getFieldFromDomain} from './scale/domain';
 import {UnitModel} from './unit';
 
 export class FacetModel extends ModelWithField {
@@ -314,7 +314,8 @@ export class FacetModel extends ModelWithField {
           const range = childScaleComponent.get('range');
 
           if (hasDiscreteDomain(type) && isVgRangeStep(range)) {
-            const field = getFieldFromDomains(childScaleComponent.domains);
+            const domain = assembleDomain(this.child, channel);
+            const field = getFieldFromDomain(domain);
             if (field) {
               fields.push(field);
               ops.push('distinct');

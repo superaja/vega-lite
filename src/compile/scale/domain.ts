@@ -26,7 +26,7 @@ import {FacetModel} from '../facet';
 import {isFacetModel, isUnitModel, Model} from '../model';
 import {SELECTION_DOMAIN} from '../selection/selection';
 import {UnitModel} from '../unit';
-import {ScaleComponentIndex, ScaleComponent} from './component';
+import {ScaleComponent, ScaleComponentIndex} from './component';
 
 export function parseScaleDomain(model: Model) {
   if (isUnitModel(model)) {
@@ -411,8 +411,7 @@ export function mergeDomains(domains: VgNonUnionDomain[]): VgDomain {
  * Return `undefined` otherwise.
  *
  */
-export function getFieldFromDomains(domains: VgNonUnionDomain[]): string {
-  const domain = mergeDomains(domains);
+export function getFieldFromDomain(domain: VgDomain): string {
   if (isDataRefDomain(domain) && isString(domain.field)) {
     return domain.field;
   }
