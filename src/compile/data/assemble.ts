@@ -8,8 +8,6 @@ import {DataFlowNode, OutputNode} from './dataflow';
 import {FacetNode} from './facet';
 import {FilterInvalidNode} from './FilterInvalid';
 import {ParseNode} from './formatparse';
-import {NonPositiveFilterNode} from './nonpositivefilter';
-import {NullFilterNode} from './nullfilter';
 import {iterateFromLeaves} from './optimizers';
 import * as optimizers from './optimizers';
 import {OrderNode} from './pathorder';
@@ -25,13 +23,8 @@ export const FACET_SCALE_PREFIX = 'scale_';
  * Start optimization path from the root. Useful for removing nodes.
  */
 function removeUnnecessaryNodes(node: DataFlowNode) {
-  // remove empty non positive filter
-  if (node instanceof NonPositiveFilterNode && every(vals(node.filter), b => b === false)) {
-    node.remove();
-  }
-
-  // remove empty null filter nodes
-  if (node instanceof NullFilterNode && every(vals(node.filteredFields), f => f === null)) {
+  // remove empty filter invalid nodes
+  if (node instanceof FilterInvalidNode && every(vals(node.filter), b => b === null)) {
     node.remove();
   }
 
@@ -198,7 +191,6 @@ function makeWalkTree(data: VgData[]) {
     }
 
     if (node instanceof FilterNode ||
-      node instanceof NullFilterNode ||
       node instanceof CalculateNode ||
       node instanceof AggregateNode ||
       node instanceof OrderNode ||
@@ -206,8 +198,7 @@ function makeWalkTree(data: VgData[]) {
       dataSource.transform.push(node.assemble());
     }
 
-    if (node instanceof NonPositiveFilterNode ||
-      node instanceof BinNode ||
+    if (node instanceof BinNode ||
       node instanceof TimeUnitNode ||
       node instanceof StackNode ||
       node instanceof FilterInvalidNode) {

@@ -11,8 +11,6 @@ import {FacetNode} from './facet';
 import {FilterInvalidNode} from './FilterInvalid';
 import {ParseNode} from './formatparse';
 import {DataComponent} from './index';
-import {NonPositiveFilterNode} from './nonpositivefilter';
-import {NullFilterNode} from './nullfilter';
 import {OrderNode} from './pathorder';
 import {SourceNode} from './source';
 import {StackNode} from './stack';

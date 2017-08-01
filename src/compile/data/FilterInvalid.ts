@@ -1,7 +1,7 @@
 import {SCALE_CHANNELS} from '../../channel';
 import {isScaleChannel} from '../../channel';
 import {FieldDef} from '../../fielddef';
-import {scaleCompatible, ScaleType, hasContinuousDomain} from '../../scale';
+import {hasContinuousDomain, scaleCompatible, ScaleType} from '../../scale';
 import {QUANTITATIVE, TEMPORAL} from '../../type';
 import {contains, Dict, differ, differArray, duplicate, extend, hash, keys, stringValue} from '../../util';
 import {VgFilterTransform, VgTransform} from '../../vega.schema';
@@ -34,7 +34,7 @@ export class FilterInvalidNode extends DataFlowNode {
         const scaleType = scaleComponent.get('type');
 
         // only automatically filter null for continuous domain since discrete domain scales can handle invalid values.
-        if (hasContinuousDomain(scaleCompType)) {
+        if (hasContinuousDomain(scaleType)) {
           aggregator[fieldDef.field] = scaleType;
           fieldDefs[fieldDef.field] = fieldDef;
         }
