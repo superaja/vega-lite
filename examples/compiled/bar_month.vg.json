@@ -66,6 +66,9 @@
             "name": "marks",
             "type": "rect",
             "role": "bar",
+            "style": [
+                "bar"
+            ],
             "from": {
                 "data": "source_0"
             },
@@ -183,10 +186,6 @@
         }
     ],
     "config": {
-        "axis": {
-            "domainColor": "#888",
-            "tickColor": "#888"
-        },
         "axisY": {
             "minExtent": 30
         }

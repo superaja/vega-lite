@@ -76,6 +76,9 @@
             "name": "marks",
             "type": "symbol",
             "role": "circle",
+            "style": [
+                "circle"
+            ],
             "from": {
                 "data": "source_0"
             },
@@ -213,10 +216,6 @@
         }
     ],
     "config": {
-        "axis": {
-            "domainColor": "#888",
-            "tickColor": "#888"
-        },
         "axisY": {
             "minExtent": 30
         }

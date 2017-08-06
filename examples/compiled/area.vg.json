@@ -65,6 +65,9 @@
         {
             "name": "marks",
             "type": "area",
+            "style": [
+                "area"
+            ],
             "sort": {
                 "field": "datum[\"yearmonth_date\"]",
                 "order": "descending"
@@ -193,10 +196,6 @@
         }
     ],
     "config": {
-        "axis": {
-            "domainColor": "#888",
-            "tickColor": "#888"
-        },
         "axisY": {
             "minExtent": 30
         }

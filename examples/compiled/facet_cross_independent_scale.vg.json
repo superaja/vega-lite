@@ -314,6 +314,9 @@
                 {
                     "name": "child_marks",
                     "type": "rect",
+                    "style": [
+                        "rect"
+                    ],
                     "from": {
                         "data": "facet"
                     },
@@ -410,10 +413,6 @@
         }
     ],
     "config": {
-        "axis": {
-            "domainColor": "#888",
-            "tickColor": "#888"
-        },
         "axisY": {
             "minExtent": 30
         }

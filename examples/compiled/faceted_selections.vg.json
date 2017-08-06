@@ -646,6 +646,9 @@
                     "type": "symbol",
                     "clip": true,
                     "role": "circle",
+                    "style": [
+                        "circle"
+                    ],
                     "from": {
                         "data": "facet"
                     },
@@ -833,10 +836,6 @@
         }
     ],
     "config": {
-        "axis": {
-            "domainColor": "#888",
-            "tickColor": "#888"
-        },
         "axisY": {
             "minExtent": 30
         }

@@ -48,6 +48,9 @@
             "name": "marks",
             "type": "symbol",
             "role": "point",
+            "style": [
+                "point"
+            ],
             "from": {
                 "data": "source_0"
             },
@@ -187,10 +190,6 @@
         }
     ],
     "config": {
-        "axis": {
-            "domainColor": "#888",
-            "tickColor": "#888"
-        },
         "axisY": {
             "minExtent": 30
         }
