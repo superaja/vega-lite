@@ -1,6 +1,6 @@
 import {AxisConfig, AxisConfigMixins} from './axis';
 import {BoxPlotConfig, COMPOSITE_MARK_STYLES} from './compositemark';
-import {CompositeMarkConfigMixins, VL_ONLY_COMPOSITE_MARK_SPECIFIC_CONFIG_PROPERTY_INDEX, CompositeMarkStyle} from './compositemark/index';
+import {CompositeMarkConfigMixins, CompositeMarkStyle, VL_ONLY_COMPOSITE_MARK_SPECIFIC_CONFIG_PROPERTY_INDEX} from './compositemark/index';
 import {VL_ONLY_GUIDE_CONFIG} from './guide';
 import {defaultLegendConfig, LegendConfig} from './legend';
 import {BarConfig, Mark, MarkConfig, MarkConfigMixins, PRIMITIVE_MARKS, TextConfig, TickConfig, VL_ONLY_MARK_CONFIG_PROPERTIES, VL_ONLY_MARK_SPECIFIC_CONFIG_PROPERTY_INDEX} from './mark';
@@ -218,10 +218,7 @@ export const defaultConfig: Config = {
   boxMid: {color: 'white'},
 
   scale: defaultScaleConfig,
-  axis: {
-    domainColor: '#888',
-    tickColor: '#888'
-  },
+  axis: {},
   axisX: {},
   axisY: {minExtent: 30},
   axisLeft: {},
