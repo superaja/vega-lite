@@ -67,6 +67,11 @@ function getTopLevelProperties(topLevelSpec: TopLevel<any>, config: Config) {
 function assembleTopLevelModel(model: Model, topLevelProperties: TopLevelProperties) {
   // TODO: change type to become VgSpec
 
+  // Currently, need to call assembleData() as the first thing as assembleData() causes side effect to model
+  // FIXME(https://github.com/vega/vega-lite/issues/2795):
+  // Decouple the data flow optimization from assembleData()
+  const data = model.assembleData();
+
   // Config with Vega-Lite only config removed.
   const vgConfig = model.config ? stripAndRedirectConfig(model.config) : undefined;
 
@@ -90,7 +95,7 @@ function assembleTopLevelModel(model: Model, topLevelProperties: TopLevelPropert
     ...(encode ? {encode: {update: encode}} : {}),
     data: [].concat(
       model.assembleSelectionData([]),
-      model.assembleData()
+      data
     ),
     ...model.assembleGroup([
       ...model.assembleLayoutSignals(),
