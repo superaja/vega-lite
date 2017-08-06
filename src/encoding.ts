@@ -25,6 +25,7 @@ import {
 import * as log from './log';
 import {Mark} from './mark';
 import {isArray, keys, some} from './util';
+import {VgValueRef} from './vega.schema';
 
 
 export interface Encoding<F> {
@@ -77,9 +78,10 @@ export interface Encoding<F> {
   size?: Conditional<LegendFieldDef<F>, ValueDef<number>>;
 
   /**
-   * The symbol's shape (only for `point` marks). The supported values are
+   * For `point` marks the supported values are
    * `"circle"` (default), `"square"`, `"cross"`, `"diamond"`, `"triangle-up"`,
    * or `"triangle-down"`, or else a custom SVG path string.
+   * For `geoshape` marks it should be a fielddef of the geojson data
    */
   shape?: Conditional<LegendFieldDef<F>, ValueDef<string>>; // TODO: maybe distinguish ordinal-only
 

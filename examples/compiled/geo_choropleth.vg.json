@@ -1,0 +1,132 @@
+{
+    "$schema": "https://vega.github.io/schema/vega/v3.0.json",
+    "autosize": "pad",
+    "padding": 5,
+    "projections": [
+        {
+            "name": "projection",
+            "fit": {
+                "signal": "data('source_0')"
+            },
+            "size": {
+                "signal": "[width, height]"
+            },
+            "type": "albersUsa"
+        }
+    ],
+    "encode": {
+        "update": {
+            "stroke": {
+                "value": "#ccc"
+            },
+            "fill": {
+                "value": "transparent"
+            }
+        }
+    },
+    "data": [
+        {
+            "name": "source_1",
+            "url": "data/unemployment.tsv",
+            "format": {
+                "type": "tsv"
+            }
+        },
+        {
+            "name": "source_0",
+            "url": "data/us-10m.json",
+            "format": {
+                "type": "topojson",
+                "feature": "counties"
+            },
+            "transform": [
+                {
+                    "type": "lookup",
+                    "from": "source_1",
+                    "key": "id",
+                    "fields": [
+                        "id"
+                    ],
+                    "values": [
+                        "rate"
+                    ]
+                },
+                {
+                    "type": "formula",
+                    "expr": "toNumber(datum[\"rate\"])",
+                    "as": "rate"
+                },
+                {
+                    "type": "filter",
+                    "expr": "datum[\"rate\"] !== null && !isNaN(datum[\"rate\"])"
+                }
+            ]
+        }
+    ],
+    "signals": [
+        {
+            "name": "width",
+            "update": "500"
+        },
+        {
+            "name": "height",
+            "update": "300"
+        }
+    ],
+    "marks": [
+        {
+            "name": "marks",
+            "type": "shape",
+            "role": "geoshape",
+            "from": {
+                "data": "source_0"
+            },
+            "encode": {
+                "update": {
+                    "fill": {
+                        "scale": "color",
+                        "field": "rate"
+                    },
+                    "opacity": {
+                        "value": 0.7
+                    }
+                }
+            },
+            "transform": [
+                {
+                    "type": "geoshape",
+                    "projection": "projection"
+                }
+            ]
+        }
+    ],
+    "scales": [
+        {
+            "name": "color",
+            "type": "sequential",
+            "domain": {
+                "data": "source_0",
+                "field": "rate"
+            },
+            "range": "ramp",
+            "nice": false,
+            "zero": false
+        }
+    ],
+    "legends": [
+        {
+            "fill": "color",
+            "title": "rate",
+            "type": "gradient"
+        }
+    ],
+    "config": {
+        "axis": {
+            "domainColor": "#888",
+            "tickColor": "#888"
+        },
+        "axisY": {
+            "minExtent": 30
+        }
+    }
+}

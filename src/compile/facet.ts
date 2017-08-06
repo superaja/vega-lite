@@ -25,7 +25,7 @@ import {
   VgScale,
   VgSignal
 } from '../vega.schema';
-import {RowCol} from '../vega.schema';
+import {RowCol, VgProjection} from '../vega.schema';
 import {domain} from './axis/rules';
 import {applyConfig, buildModel, formatSignalRef} from './common';
 import {assembleData, assembleFacetData, FACET_SCALE_PREFIX} from './data/assemble';
@@ -34,12 +34,12 @@ import {getHeaderType, HeaderChannel, HeaderComponent} from './layout/header';
 import {parseChildrenLayoutSize} from './layout/parse';
 import {labels} from './legend/encode';
 import {Model, ModelWithField} from './model';
+import {assembleProjectionForModel} from './projection/assemble';
 import {RepeaterValue, replaceRepeaterInFacet} from './repeater';
 import {parseGuideResolve} from './resolve';
 import {assembleScalesForModel} from './scale/assemble';
 import {ScaleComponent, ScaleComponentIndex} from './scale/component';
 import {getFieldFromDomains} from './scale/domain';
-import {UnitModel} from './unit';
 
 export class FacetModel extends ModelWithField {
   public readonly type = 'facet';
@@ -51,7 +51,6 @@ export class FacetModel extends ModelWithField {
 
   constructor(spec: FacetSpec, parent: Model, parentGivenName: string, repeater: RepeaterValue, config: Config) {
     super(spec, parent, parentGivenName, config, spec.resolve);
-
 
     this.child = buildModel(spec.spec, this, this.getName('child'), undefined, repeater, config);
     this.children = [this.child];
@@ -199,6 +198,10 @@ export class FacetModel extends ModelWithField {
 
   public assembleScales(): VgScale[] {
     return assembleScalesForModel(this);
+  }
+
+  public assembleProjections(): VgProjection[] {
+    return assembleProjectionForModel(this);
   }
 
   public assembleSelectionTopLevelSignals(signals: any[]): VgSignal[] {

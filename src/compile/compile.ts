@@ -70,6 +70,15 @@ function assembleTopLevelModel(model: Model, topLevelProperties: TopLevelPropert
   // Config with Vega-Lite only config removed.
   const vgConfig = model.config ? stripConfig(model.config) : undefined;
 
+  // Assemble data before projection
+  const data = [].concat(
+    model.assembleSelectionData([]),
+    model.assembleData()
+  );
+
+  // Projection
+  const projections = model.assembleProjections();
+
   // autoResize has to be put under autosize
   const {autoResize, ...topLevelProps} = topLevelProperties;
   const title = model.assembleTitle();
@@ -88,10 +97,8 @@ function assembleTopLevelModel(model: Model, topLevelProperties: TopLevelPropert
     ...topLevelProps,
     ...(title? {title} : {}),
     ...(encode ? {encode: {update: encode}} : {}),
-    data: [].concat(
-      model.assembleSelectionData([]),
-      model.assembleData()
-    ),
+    data: data,
+    ...(projections.length > 0 ? {projections: projections} : {}),
     ...model.assembleGroup([
       ...model.assembleLayoutSignals(),
       ...model.assembleSelectionTopLevelSignals([])

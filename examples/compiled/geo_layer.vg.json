@@ -1,0 +1,151 @@
+{
+    "$schema": "https://vega.github.io/schema/vega/v3.0.json",
+    "autosize": "pad",
+    "padding": 5,
+    "projections": [
+        {
+            "name": "layer_0_projection",
+            "fit": {
+                "signal": "data('source_0')"
+            },
+            "size": {
+                "signal": "[width, height]"
+            },
+            "type": "albersUsa"
+        },
+        {
+            "name": "layer_1_projection",
+            "fit": {
+                "signal": "layer_1_geojson"
+            },
+            "size": {
+                "signal": "[width, height]"
+            },
+            "type": "albersUsa"
+        }
+    ],
+    "encode": {
+        "update": {
+            "stroke": {
+                "value": "#ccc"
+            },
+            "fill": {
+                "value": "transparent"
+            }
+        }
+    },
+    "data": [
+        {
+            "name": "source_0",
+            "url": "data/us-10m.json",
+            "format": {
+                "type": "topojson",
+                "feature": "states"
+            }
+        },
+        {
+            "name": "source_1",
+            "url": "data/airports.csv",
+            "format": {
+                "type": "csv"
+            },
+            "transform": [
+                {
+                    "type": "geopoint",
+                    "projection": "layer_1_projection",
+                    "fields": [
+                        "longitude",
+                        "latitude"
+                    ],
+                    "as": [
+                        "longitude_geo",
+                        "latitude_geo"
+                    ]
+                },
+                {
+                    "type": "geojson",
+                    "fields": [
+                        "longitude",
+                        "latitude"
+                    ],
+                    "signal": "layer_1_geojson"
+                }
+            ]
+        }
+    ],
+    "signals": [
+        {
+            "name": "width",
+            "update": "500"
+        },
+        {
+            "name": "height",
+            "update": "300"
+        }
+    ],
+    "marks": [
+        {
+            "name": "layer_0_marks",
+            "type": "shape",
+            "role": "geoshape",
+            "from": {
+                "data": "source_0"
+            },
+            "encode": {
+                "update": {
+                    "fill": {
+                        "value": "black"
+                    },
+                    "opacity": {
+                        "value": 0.8
+                    }
+                }
+            },
+            "transform": [
+                {
+                    "type": "geoshape",
+                    "projection": "layer_0_projection"
+                }
+            ]
+        },
+        {
+            "name": "layer_1_marks",
+            "type": "symbol",
+            "role": "circle",
+            "from": {
+                "data": "source_1"
+            },
+            "encode": {
+                "update": {
+                    "x": {
+                        "field": "longitude_geo"
+                    },
+                    "y": {
+                        "field": "latitude_geo"
+                    },
+                    "fill": {
+                        "value": "steelblue"
+                    },
+                    "size": {
+                        "value": 10
+                    },
+                    "shape": {
+                        "value": "circle"
+                    },
+                    "opacity": {
+                        "value": 0.7
+                    }
+                }
+            }
+        }
+    ],
+    "config": {
+        "axis": {
+            "domainColor": "#888",
+            "tickColor": "#888"
+        },
+        "axisY": {
+            "minExtent": 30
+        }
+    }
+}

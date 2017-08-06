@@ -5,7 +5,7 @@ import {FILL_STROKE_CONFIG} from '../mark';
 import {NonspatialResolve, ResolveMapping, SpatialResolve} from '../resolve';
 import {isLayerSpec, isUnitSpec, LayerSpec, LayoutSizeMixins} from '../spec';
 import {Dict, flatten, keys, vals} from '../util';
-import {isSignalRefDomain, VgData, VgEncodeEntry, VgLayout, VgScale, VgSignal, VgTitle} from '../vega.schema';
+import {isSignalRefDomain, VgData, VgEncodeEntry, VgLayout, VgProjection, VgScale, VgSignal, VgTitle} from '../vega.schema';
 import {AxisComponentIndex} from './axis/component';
 import {parseLayerAxis} from './axis/parse';
 import {applyConfig, buildModel} from './common';
@@ -14,6 +14,7 @@ import {parseData} from './data/parse';
 import {assembleLayoutSignals} from './layout/assemble';
 import {parseLayerLayoutSize} from './layout/parse';
 import {Model} from './model';
+import {assembleProjectionsForModelAndChildren} from './projection/assemble';
 import {RepeaterValue} from './repeater';
 import {assembleScaleForModelAndChildren} from './scale/assemble';
 import {ScaleComponent, ScaleComponentIndex} from './scale/component';
@@ -143,6 +144,10 @@ export class LayerModel extends Model {
 
   public assembleScales(): VgScale[] {
     return assembleScaleForModelAndChildren(this);
+  }
+
+  public assembleProjections(): VgProjection[] {
+    return assembleProjectionsForModelAndChildren(this);
   }
 
   public assembleLayout(): VgLayout {

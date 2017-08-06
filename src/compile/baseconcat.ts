@@ -2,11 +2,12 @@ import {Config} from '../config';
 import {ResolveMapping} from '../resolve';
 import {BaseSpec} from '../spec';
 import {keys} from '../util';
-import {VgData, VgScale, VgSignal} from '../vega.schema';
+import {VgData, VgProjection, VgScale, VgSignal} from '../vega.schema';
 import {assembleData} from './data/assemble';
 import {parseData} from './data/parse';
 import {assembleLayoutSignals} from './layout/assemble';
 import {Model} from './model';
+import {assembleProjectionsForModelAndChildren} from './projection/assemble';
 import {assembleScaleForModelAndChildren} from './scale/assemble';
 
 export abstract class BaseConcatModel extends Model {
@@ -62,6 +63,10 @@ export abstract class BaseConcatModel extends Model {
 
   public assembleScales(): VgScale[] {
     return assembleScaleForModelAndChildren(this);
+  }
+
+  public assembleProjections(): VgProjection[] {
+    return assembleProjectionsForModelAndChildren(this);
   }
 
   public assembleSelectionTopLevelSignals(signals: any[]): VgSignal[] {

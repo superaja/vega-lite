@@ -705,6 +705,15 @@
       },
       "type": "object"
     },
+    "BasicType": {
+      "enum": [
+        "quantitative",
+        "ordinal",
+        "temporal",
+        "nominal"
+      ],
+      "type": "string"
+    },
     "Bin": {
       "additionalProperties": false,
       "description": "Binning properties or boolean flag for determining whether to bin data or not.",
@@ -1162,7 +1171,7 @@
         },
         "type": {
           "$ref": "#/definitions/Type",
-          "description": "The encoded field's type of measurement. This can be either a full type\nname (`\"quantitative\"`, `\"temporal\"`, `\"ordinal\"`,  and `\"nominal\"`)\nor an initial character of the type name (`\"Q\"`, `\"T\"`, `\"O\"`, `\"N\"`).\nThis property is case-insensitive."
+          "description": "The encoded field's type of measurement. This can be either a full basic type\nname (`\"quantitative\"`, `\"temporal\"`, `\"ordinal\"`,  and `\"nominal\"`)\nor an initial character of the basic type name (`\"Q\"`, `\"T\"`, `\"O\"`, `\"N\"`).\nIt can also be a geo type (`\"latitude\"`, `\"longitude\"`, and `\"geojson\"`) when applicable.\nThis property is case-insensitive."
         }
       },
       "required": [
@@ -1213,7 +1222,7 @@
         },
         "type": {
           "$ref": "#/definitions/Type",
-          "description": "The encoded field's type of measurement. This can be either a full type\nname (`\"quantitative\"`, `\"temporal\"`, `\"ordinal\"`,  and `\"nominal\"`)\nor an initial character of the type name (`\"Q\"`, `\"T\"`, `\"O\"`, `\"N\"`).\nThis property is case-insensitive."
+          "description": "The encoded field's type of measurement. This can be either a full basic type\nname (`\"quantitative\"`, `\"temporal\"`, `\"ordinal\"`,  and `\"nominal\"`)\nor an initial character of the basic type name (`\"Q\"`, `\"T\"`, `\"O\"`, `\"N\"`).\nIt can also be a geo type (`\"latitude\"`, `\"longitude\"`, and `\"geojson\"`) when applicable.\nThis property is case-insensitive."
         }
       },
       "required": [
@@ -1439,7 +1448,7 @@
         },
         "type": {
           "$ref": "#/definitions/Type",
-          "description": "The encoded field's type of measurement. This can be either a full type\nname (`\"quantitative\"`, `\"temporal\"`, `\"ordinal\"`,  and `\"nominal\"`)\nor an initial character of the type name (`\"Q\"`, `\"T\"`, `\"O\"`, `\"N\"`).\nThis property is case-insensitive."
+          "description": "The encoded field's type of measurement. This can be either a full basic type\nname (`\"quantitative\"`, `\"temporal\"`, `\"ordinal\"`,  and `\"nominal\"`)\nor an initial character of the basic type name (`\"Q\"`, `\"T\"`, `\"O\"`, `\"N\"`).\nIt can also be a geo type (`\"latitude\"`, `\"longitude\"`, and `\"geojson\"`) when applicable.\nThis property is case-insensitive."
         }
       },
       "required": [
@@ -1510,7 +1519,7 @@
         },
         "type": {
           "$ref": "#/definitions/Type",
-          "description": "The encoded field's type of measurement. This can be either a full type\nname (`\"quantitative\"`, `\"temporal\"`, `\"ordinal\"`,  and `\"nominal\"`)\nor an initial character of the type name (`\"Q\"`, `\"T\"`, `\"O\"`, `\"N\"`).\nThis property is case-insensitive."
+          "description": "The encoded field's type of measurement. This can be either a full basic type\nname (`\"quantitative\"`, `\"temporal\"`, `\"ordinal\"`,  and `\"nominal\"`)\nor an initial character of the basic type name (`\"Q\"`, `\"T\"`, `\"O\"`, `\"N\"`).\nIt can also be a geo type (`\"latitude\"`, `\"longitude\"`, and `\"geojson\"`) when applicable.\nThis property is case-insensitive."
         }
       },
       "required": [
@@ -1561,7 +1570,7 @@
         },
         "type": {
           "$ref": "#/definitions/Type",
-          "description": "The encoded field's type of measurement. This can be either a full type\nname (`\"quantitative\"`, `\"temporal\"`, `\"ordinal\"`,  and `\"nominal\"`)\nor an initial character of the type name (`\"Q\"`, `\"T\"`, `\"O\"`, `\"N\"`).\nThis property is case-insensitive."
+          "description": "The encoded field's type of measurement. This can be either a full basic type\nname (`\"quantitative\"`, `\"temporal\"`, `\"ordinal\"`,  and `\"nominal\"`)\nor an initial character of the basic type name (`\"Q\"`, `\"T\"`, `\"O\"`, `\"N\"`).\nIt can also be a geo type (`\"latitude\"`, `\"longitude\"`, and `\"geojson\"`) when applicable.\nThis property is case-insensitive."
         }
       },
       "required": [
@@ -1706,6 +1715,10 @@
         "countTitle": {
           "description": "Default axis and legend title for count fields.\n\n__Default value:__ `'Number of Records'`.",
           "type": "string"
+        },
+        "geoshape": {
+          "$ref": "#/definitions/MarkConfig",
+          "description": "Geoshape-Specific Config "
         },
         "invalidValues": {
           "description": "Defines how Vega-Lite should handle invalid values (`null` and `NaN`).\n- If set to `\"filter\"` (default), all data items with null values are filtered.\n- If `null`, all data items are included. In this case, invalid values will be interpreted as zeroes.",
@@ -2034,7 +2047,7 @@
         },
         "shape": {
           "$ref": "#/definitions/ConditionalStringLegendDef",
-          "description": "The symbol's shape (only for `point` marks). The supported values are\n`\"circle\"` (default), `\"square\"`, `\"cross\"`, `\"diamond\"`, `\"triangle-up\"`,\nor `\"triangle-down\"`, or else a custom SVG path string."
+          "description": "For `point` marks the supported values are\n`\"circle\"` (default), `\"square\"`, `\"cross\"`, `\"diamond\"`, `\"triangle-up\"`,\nor `\"triangle-down\"`, or else a custom SVG path string.\nFor `geoshape` marks it should be a fielddef of the geojson data"
         },
         "size": {
           "$ref": "#/definitions/ConditionalNumberLegendDef",
@@ -2144,7 +2157,7 @@
         },
         "shape": {
           "$ref": "#/definitions/ConditionalStringLegendDef",
-          "description": "The symbol's shape (only for `point` marks). The supported values are\n`\"circle\"` (default), `\"square\"`, `\"cross\"`, `\"diamond\"`, `\"triangle-up\"`,\nor `\"triangle-down\"`, or else a custom SVG path string."
+          "description": "For `point` marks the supported values are\n`\"circle\"` (default), `\"square\"`, `\"cross\"`, `\"diamond\"`, `\"triangle-up\"`,\nor `\"triangle-down\"`, or else a custom SVG path string.\nFor `geoshape` marks it should be a fielddef of the geojson data"
         },
         "size": {
           "$ref": "#/definitions/ConditionalNumberLegendDef",
@@ -2314,7 +2327,7 @@
         },
         "type": {
           "$ref": "#/definitions/Type",
-          "description": "The encoded field's type of measurement. This can be either a full type\nname (`\"quantitative\"`, `\"temporal\"`, `\"ordinal\"`,  and `\"nominal\"`)\nor an initial character of the type name (`\"Q\"`, `\"T\"`, `\"O\"`, `\"N\"`).\nThis property is case-insensitive."
+          "description": "The encoded field's type of measurement. This can be either a full basic type\nname (`\"quantitative\"`, `\"temporal\"`, `\"ordinal\"`,  and `\"nominal\"`)\nor an initial character of the basic type name (`\"Q\"`, `\"T\"`, `\"O\"`, `\"N\"`).\nIt can also be a geo type (`\"latitude\"`, `\"longitude\"`, and `\"geojson\"`) when applicable.\nThis property is case-insensitive."
         }
       },
       "required": [
@@ -2372,7 +2385,7 @@
         },
         "type": {
           "$ref": "#/definitions/Type",
-          "description": "The encoded field's type of measurement. This can be either a full type\nname (`\"quantitative\"`, `\"temporal\"`, `\"ordinal\"`,  and `\"nominal\"`)\nor an initial character of the type name (`\"Q\"`, `\"T\"`, `\"O\"`, `\"N\"`).\nThis property is case-insensitive."
+          "description": "The encoded field's type of measurement. This can be either a full basic type\nname (`\"quantitative\"`, `\"temporal\"`, `\"ordinal\"`,  and `\"nominal\"`)\nor an initial character of the basic type name (`\"Q\"`, `\"T\"`, `\"O\"`, `\"N\"`).\nIt can also be a geo type (`\"latitude\"`, `\"longitude\"`, and `\"geojson\"`) when applicable.\nThis property is case-insensitive."
         }
       },
       "required": [
@@ -2676,11 +2689,15 @@
         },
         "mark": {
           "$ref": "#/definitions/AnyMark",
-          "description": "A string describing the mark type (one of `\"bar\"`, `\"circle\"`, `\"square\"`, `\"tick\"`, `\"line\"`,\n`\"area\"`, `\"point\"`, `\"rule\"`, and `\"text\"`) or a [mark definition object](mark.html#mark-def)."
+          "description": "A string describing the mark type (one of `\"bar\"`, `\"circle\"`, `\"square\"`, `\"tick\"`, `\"line\"`,\n`\"area\"`, `\"point\"`, `\"rule\"`, `\"geoshape\"`, and `\"text\"`) or a [mark definition object](mark.html#mark-def)."
         },
         "name": {
           "description": "Name of the visualization for later reference.",
           "type": "string"
+        },
+        "projection": {
+          "$ref": "#/definitions/Projection",
+          "description": "A geo projection"
         },
         "selection": {
           "additionalProperties": {
@@ -2728,11 +2745,15 @@
         },
         "mark": {
           "$ref": "#/definitions/AnyMark",
-          "description": "A string describing the mark type (one of `\"bar\"`, `\"circle\"`, `\"square\"`, `\"tick\"`, `\"line\"`,\n`\"area\"`, `\"point\"`, `\"rule\"`, and `\"text\"`) or a [mark definition object](mark.html#mark-def)."
+          "description": "A string describing the mark type (one of `\"bar\"`, `\"circle\"`, `\"square\"`, `\"tick\"`, `\"line\"`,\n`\"area\"`, `\"point\"`, `\"rule\"`, `\"geoshape\"`, and `\"text\"`) or a [mark definition object](mark.html#mark-def)."
         },
         "name": {
           "description": "Name of the visualization for later reference.",
           "type": "string"
+        },
+        "projection": {
+          "$ref": "#/definitions/Projection",
+          "description": "A geo projection"
         },
         "selection": {
           "additionalProperties": {
@@ -2795,6 +2816,14 @@
         "vconcat"
       ],
       "type": "object"
+    },
+    "GeoType": {
+      "enum": [
+        "latitude",
+        "longitude",
+        "geojson"
+      ],
+      "type": "string"
     },
     "Guide": {
       "additionalProperties": false,
@@ -3469,7 +3498,7 @@
         },
         "type": {
           "$ref": "#/definitions/Type",
-          "description": "The encoded field's type of measurement. This can be either a full type\nname (`\"quantitative\"`, `\"temporal\"`, `\"ordinal\"`,  and `\"nominal\"`)\nor an initial character of the type name (`\"Q\"`, `\"T\"`, `\"O\"`, `\"N\"`).\nThis property is case-insensitive."
+          "description": "The encoded field's type of measurement. This can be either a full basic type\nname (`\"quantitative\"`, `\"temporal\"`, `\"ordinal\"`,  and `\"nominal\"`)\nor an initial character of the basic type name (`\"Q\"`, `\"T\"`, `\"O\"`, `\"N\"`).\nIt can also be a geo type (`\"latitude\"`, `\"longitude\"`, and `\"geojson\"`) when applicable.\nThis property is case-insensitive."
         }
       },
       "required": [
@@ -3678,7 +3707,8 @@
         "rect",
         "rule",
         "circle",
-        "square"
+        "square",
+        "geoshape"
       ],
       "type": "string"
     },
@@ -3836,6 +3866,10 @@
           "$ref": "#/definitions/MarkConfig",
           "description": "Circle-Specific Config "
         },
+        "geoshape": {
+          "$ref": "#/definitions/MarkConfig",
+          "description": "Geoshape-Specific Config "
+        },
         "line": {
           "$ref": "#/definitions/MarkConfig",
           "description": "Line-Specific Config "
@@ -3902,7 +3936,7 @@
         },
         "type": {
           "$ref": "#/definitions/Mark",
-          "description": "The mark type.\nOne of `\"bar\"`, `\"circle\"`, `\"square\"`, `\"tick\"`, `\"line\"`,\n`\"area\"`, `\"point\"`, `\"rule\"`, and `\"text\"`."
+          "description": "The mark type.\nOne of `\"bar\"`, `\"circle\"`, `\"square\"`, `\"tick\"`, `\"line\"`,\n`\"area\"`, `\"point\"`, `\"geoshape\"`, `\"rule\"`, and `\"text\"`."
         }
       },
       "required": [
@@ -4114,7 +4148,7 @@
         },
         "type": {
           "$ref": "#/definitions/Type",
-          "description": "The encoded field's type of measurement. This can be either a full type\nname (`\"quantitative\"`, `\"temporal\"`, `\"ordinal\"`,  and `\"nominal\"`)\nor an initial character of the type name (`\"Q\"`, `\"T\"`, `\"O\"`, `\"N\"`).\nThis property is case-insensitive."
+          "description": "The encoded field's type of measurement. This can be either a full basic type\nname (`\"quantitative\"`, `\"temporal\"`, `\"ordinal\"`,  and `\"nominal\"`)\nor an initial character of the basic type name (`\"Q\"`, `\"T\"`, `\"O\"`, `\"N\"`).\nIt can also be a geo type (`\"latitude\"`, `\"longitude\"`, and `\"geojson\"`) when applicable.\nThis property is case-insensitive."
         }
       },
       "required": [
@@ -4219,13 +4253,66 @@
         },
         "type": {
           "$ref": "#/definitions/Type",
-          "description": "The encoded field's type of measurement. This can be either a full type\nname (`\"quantitative\"`, `\"temporal\"`, `\"ordinal\"`,  and `\"nominal\"`)\nor an initial character of the type name (`\"Q\"`, `\"T\"`, `\"O\"`, `\"N\"`).\nThis property is case-insensitive."
+          "description": "The encoded field's type of measurement. This can be either a full basic type\nname (`\"quantitative\"`, `\"temporal\"`, `\"ordinal\"`,  and `\"nominal\"`)\nor an initial character of the basic type name (`\"Q\"`, `\"T\"`, `\"O\"`, `\"N\"`).\nIt can also be a geo type (`\"latitude\"`, `\"longitude\"`, and `\"geojson\"`) when applicable.\nThis property is case-insensitive."
         }
       },
       "required": [
         "type"
       ],
       "type": "object"
+    },
+    "Projection": {
+      "additionalProperties": false,
+      "properties": {
+        "center": {
+          "items": {
+            "type": "number"
+          },
+          "type": "array"
+        },
+        "clipAngle": {
+          "type": "number"
+        },
+        "clipExtent": {
+          "items": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array"
+          },
+          "type": "array"
+        },
+        "precision": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Allows manipulation and formatting of text strings and determination and location of substrings within strings.",
+          "properties": {
+            "length": {
+              "description": "Returns the length of a String object. ",
+              "type": "number"
+            }
+          },
+          "required": [
+            "length"
+          ],
+          "type": "object"
+        },
+        "rotate": {
+          "description": "The rotation of the projection.",
+          "items": {
+            "type": "number"
+          },
+          "type": "array"
+        },
+        "type": {
+          "$ref": "#/definitions/ProjectionType"
+        }
+      },
+      "type": "object"
+    },
+    "ProjectionType": {
+      "$ref": "#/definitions/VgProjectionType"
     },
     "Range": {
       "anyOf": [
@@ -4621,7 +4708,7 @@
         },
         "type": {
           "$ref": "#/definitions/Type",
-          "description": "The encoded field's type of measurement. This can be either a full type\nname (`\"quantitative\"`, `\"temporal\"`, `\"ordinal\"`,  and `\"nominal\"`)\nor an initial character of the type name (`\"Q\"`, `\"T\"`, `\"O\"`, `\"N\"`).\nThis property is case-insensitive."
+          "description": "The encoded field's type of measurement. This can be either a full basic type\nname (`\"quantitative\"`, `\"temporal\"`, `\"ordinal\"`,  and `\"nominal\"`)\nor an initial character of the basic type name (`\"Q\"`, `\"T\"`, `\"O\"`, `\"N\"`).\nIt can also be a geo type (`\"latitude\"`, `\"longitude\"`, and `\"geojson\"`) when applicable.\nThis property is case-insensitive."
         }
       },
       "required": [
@@ -5153,7 +5240,7 @@
         },
         "type": {
           "$ref": "#/definitions/Type",
-          "description": "The encoded field's type of measurement. This can be either a full type\nname (`\"quantitative\"`, `\"temporal\"`, `\"ordinal\"`,  and `\"nominal\"`)\nor an initial character of the type name (`\"Q\"`, `\"T\"`, `\"O\"`, `\"N\"`).\nThis property is case-insensitive."
+          "description": "The encoded field's type of measurement. This can be either a full basic type\nname (`\"quantitative\"`, `\"temporal\"`, `\"ordinal\"`,  and `\"nominal\"`)\nor an initial character of the basic type name (`\"Q\"`, `\"T\"`, `\"O\"`, `\"N\"`).\nIt can also be a geo type (`\"latitude\"`, `\"longitude\"`, and `\"geojson\"`) when applicable.\nThis property is case-insensitive."
         }
       },
       "required": [
@@ -5420,7 +5507,7 @@
         },
         "mark": {
           "$ref": "#/definitions/AnyMark",
-          "description": "A string describing the mark type (one of `\"bar\"`, `\"circle\"`, `\"square\"`, `\"tick\"`, `\"line\"`,\n`\"area\"`, `\"point\"`, `\"rule\"`, and `\"text\"`) or a [mark definition object](mark.html#mark-def)."
+          "description": "A string describing the mark type (one of `\"bar\"`, `\"circle\"`, `\"square\"`, `\"tick\"`, `\"line\"`,\n`\"area\"`, `\"point\"`, `\"rule\"`, `\"geoshape\"`, and `\"text\"`) or a [mark definition object](mark.html#mark-def)."
         },
         "name": {
           "description": "Name of the visualization for later reference.",
@@ -5429,6 +5516,10 @@
         "padding": {
           "$ref": "#/definitions/Padding",
           "description": "The default visualization padding, in pixels, from the edge of the visualization canvas to the data rectangle.  If a number, specifies padding for all sides.\nIf an object, the value should have the format `{\"left\": 5, \"top\": 5, \"right\": 5, \"bottom\": 5}` to specify padding for each side of the visualization.\n\n__Default value__: `5`"
+        },
+        "projection": {
+          "$ref": "#/definitions/Projection",
+          "description": "A geo projection"
         },
         "selection": {
           "additionalProperties": {
@@ -5826,14 +5917,15 @@
       ]
     },
     "Type": {
-      "description": "Constants and utilities for data type  \n Data type based on level of measurement ",
-      "enum": [
-        "quantitative",
-        "ordinal",
-        "temporal",
-        "nominal"
+      "anyOf": [
+        {
+          "$ref": "#/definitions/BasicType"
+        },
+        {
+          "$ref": "#/definitions/GeoType"
+        }
       ],
-      "type": "string"
+      "description": "Constants and utilities for data type  \n Data type based on level of measurement "
     },
     "UrlData": {
       "additionalProperties": false,
@@ -6601,6 +6693,24 @@
         }
       },
       "type": "object"
+    },
+    "VgProjectionType": {
+      "enum": [
+        "albers",
+        "albersUsa",
+        "azimuthalEqualArea",
+        "azimuthalEquidistant",
+        "conicConformal",
+        "conicEqualArea",
+        "conicEquidistant",
+        "equirectangular",
+        "gnomonic",
+        "mercator",
+        "orthographic",
+        "stereographic",
+        "transverseMercator"
+      ],
+      "type": "string"
     },
     "VgRadioBinding": {
       "additionalProperties": false,
